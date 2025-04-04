@@ -318,7 +318,11 @@ def test_should_return_false_when_unexpected_exception_occurs():
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    result = service.process_orders(user_id=1)
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
+        result = service.process_orders(user_id=1)
 
     # Assert
     assert result is False
