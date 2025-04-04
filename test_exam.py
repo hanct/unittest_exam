@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock, patch
 from typing import List
 
@@ -58,7 +57,10 @@ def test_should_create_csv_and_mark_exported_when_type_a_order_amount_less_than_
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    with patch('builtins.open', new_callable=Mock) as mock_open:
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
         service.process_orders(user_id=1)
 
     # Assert
@@ -75,7 +77,10 @@ def test_should_create_csv_with_high_value_note_when_type_a_order_amount_greater
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    with patch('builtins.open', new_callable=Mock) as mock_open:
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
         service.process_orders(user_id=1)
 
     # Assert
@@ -133,11 +138,11 @@ def test_should_mark_pending_when_type_b_order_api_success_data_lt_50():
     assert db_service.updated_orders[0][1] == 'pending'
 
 
-def test_should_mark_pending_when_type_b_order_api_success_and_flag_is_true():
+def test_should_mark_pending_when_type_b_order_api_success_and_flag_is_true_and_response_data_lt_50():
     # Arrange
     order = Order(id=1, type='B', amount=80.0, flag=True)
     db_service = MockDatabaseService(orders=[order])
-    api_client = MockAPIClient(response=APIResponse('success', 60))
+    api_client = MockAPIClient(response=APIResponse('success', 40))
     service = OrderProcessingService(db_service, api_client)
 
     # Act
@@ -253,7 +258,10 @@ def test_should_set_low_priority_when_order_amount_less_than_200():
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    with patch('builtins.open', new_callable=Mock):
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
         service.process_orders(user_id=1)
 
     # Assert
@@ -270,7 +278,10 @@ def test_should_set_high_priority_when_order_amount_greater_than_200():
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    with patch('builtins.open', new_callable=Mock):
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
         service.process_orders(user_id=1)
 
     # Assert
@@ -288,7 +299,10 @@ def test_should_mark_db_error_when_database_update_raises_exception():
     service = OrderProcessingService(db_service, api_client)
 
     # Act
-    with patch('builtins.open', new_callable=Mock):
+    mock_file = Mock()
+    mock_file.__enter__ = Mock(return_value=mock_file)
+    mock_file.__exit__ = Mock(return_value=None)
+    with patch('builtins.open', return_value=mock_file):
         service.process_orders(user_id=1)
 
     # Assert
